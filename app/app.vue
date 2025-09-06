@@ -1,6 +1,12 @@
 <template>
   <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
+    <UApp>
+      <NuxtRouteAnnouncer />
+      <NuxtPage />
+    </UApp>
   </div>
 </template>
+<style>
+@import "tailwindcss";
+@import "@nuxt/ui";
+</style>
