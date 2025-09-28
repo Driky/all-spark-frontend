@@ -4,21 +4,28 @@ import type { LoginRequest } from '#shared/schemas/auth'
 const { login } = useAuth()
 const loading = ref(false)
 const error = ref<string | null>(null)
+const fieldErrors = ref<Record<string, string>>({})
 
 const handleLogin = async (form: LoginRequest) => {
   loading.value = true
   error.value = null
+  fieldErrors.value = {}
 
-  try {
-    await login(form)
+  const result = await login(form)
 
+  if (result.success) {
     // Redirect to protected page
     await navigateTo('/protected')
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Login failed'
-  } finally {
-    loading.value = false
+  } else {
+    // Handle validation and API errors
+    fieldErrors.value = result.errors
+    // Show general error if it exists
+    if (result.errors.general) {
+      error.value = result.errors.general
+    }
   }
+
+  loading.value = false
 }
 </script>
 
@@ -31,6 +38,6 @@ const handleLogin = async (form: LoginRequest) => {
       class="mb-4 max-w-md mx-auto"
       :title="error"
     />
-    <LoginForm @login="handleLogin" :loading="loading" />
+    <LoginForm :loading="loading" @login="handleLogin" />
   </div>
 </template>

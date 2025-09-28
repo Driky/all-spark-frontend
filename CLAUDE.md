@@ -21,8 +21,11 @@ pnpm generate
 
 ### Linting & Type Checking
 ```bash
-# Run ESLint (configured via @nuxt/eslint module)
-pnpm nuxi lint
+# Run ESLint
+pnpm lint
+
+# Auto-fix ESLint issues
+pnpm lint:fix
 
 # Run TypeScript type checking
 pnpx nuxi typecheck

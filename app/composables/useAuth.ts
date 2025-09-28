@@ -14,11 +14,20 @@ export interface RegisterResponse {
   message: string
 }
 
-export interface ValidationResult<T> {
-  success: boolean
-  data?: T
-  errors?: Record<string, string> // Field-specific errors
+// Discriminated union types for type-safe error handling
+export type SuccessResult<T> = {
+  success: true
+  data: T
+  errors?: never
 }
+
+export type ErrorResult = {
+  success: false
+  errors: Record<string, string>
+  data?: never
+}
+
+export type ValidationResult<T> = SuccessResult<T> | ErrorResult
 
 export const useAuth = () => {
   const { fetch: fetchUserSession, clear: clearSession } = useUserSession()
@@ -82,37 +91,38 @@ export const useAuth = () => {
     }
   }
 
-  const register = async (form: RegisterFormInput): Promise<RegisterResponse> => {
+  const register = async (form: RegisterFormInput): Promise<ValidationResult<RegisterResponse>> => {
     // Validate form data
     const validation = validateRegisterForm(form)
-    if (!validation.success || !validation.data) {
-      // Throw an error with all validation errors
-      const errorMessage = validation.errors
-        ? Object.values(validation.errors).join(', ')
-        : 'Validation failed'
-      throw new Error(errorMessage)
+    if (!validation.success) {
+      return validation
     }
 
     try {
-      return await $fetch('/api/auth/register', {
-              method: 'POST',
-              body: validation.data // Send only email and password
-            });
-
+      const response = await $fetch('/api/auth/register', {
+        method: 'POST',
+        body: validation.data // Send only email and password
+      })
+      return {
+        success: true,
+        data: response
+      }
     } catch (error) {
       const fetchError = error as FetchError
-      throw new Error(fetchError.data?.statusMessage || fetchError.message || 'Registration failed')
+      return {
+        success: false,
+        errors: {
+          general: fetchError.data?.statusMessage || fetchError.message || 'Registration failed'
+        }
+      }
     }
   }
 
-  const login = async (form: LoginRequest): Promise<void> => {
+  const login = async (form: LoginRequest): Promise<ValidationResult<void>> => {
     // Validate form data
     const validation = validateLoginForm(form)
-    if (!validation.success || !validation.data) {
-      const errorMessage = validation.errors
-        ? Object.values(validation.errors).join(', ')
-        : 'Validation failed'
-      throw new Error(errorMessage)
+    if (!validation.success) {
+      return validation
     }
 
     try {
@@ -123,13 +133,23 @@ export const useAuth = () => {
 
       // Refresh session on client after login
       await fetchUserSession()
+
+      return {
+        success: true,
+        data: undefined
+      }
     } catch (error) {
       const fetchError = error as FetchError
-      throw new Error(fetchError.data?.statusMessage || fetchError.message || 'Login failed')
+      return {
+        success: false,
+        errors: {
+          general: fetchError.data?.statusMessage || fetchError.message || 'Login failed'
+        }
+      }
     }
   }
 
-  const logout = async (): Promise<void> => {
+  const logout = async (): Promise<ValidationResult<void>> => {
     try {
       await $fetch('/api/auth/logout', {
         method: 'POST'
@@ -137,9 +157,37 @@ export const useAuth = () => {
 
       // Clear session on client
       await clearSession()
+
+      return {
+        success: true,
+        data: undefined
+      }
     } catch (error) {
       const fetchError = error as FetchError
-      throw new Error(fetchError.data?.statusMessage || fetchError.message || 'Logout failed')
+      return {
+        success: false,
+        errors: {
+          general: fetchError.data?.statusMessage || fetchError.message || 'Logout failed'
+        }
+      }
+    }
+  }
+
+  const forceLocalLogout = async (): Promise<ValidationResult<void>> => {
+    try {
+      // Clear session without calling API
+      await clearSession()
+
+      return {
+        success: true,
+        data: undefined
+      }
+    } catch (error) {
+      // Force logout should always succeed
+      return {
+        success: true,
+        data: undefined
+      }
     }
   }
 
@@ -147,6 +195,7 @@ export const useAuth = () => {
     register,
     login,
     logout,
+    forceLocalLogout,
     validateRegisterForm,
     validateLoginForm
   }

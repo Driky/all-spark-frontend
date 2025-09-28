@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { registerFormSchema } from '#shared/schemas/auth';
 
-const props = defineProps<{
+defineProps<{
   loading?: boolean;
   showEmailVerification?: boolean;
   registeredEmail?: string;
@@ -32,10 +32,7 @@ const handleSubmit = async () => {
       class="max-w-md w-full mx-auto p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/30"
     >
       <!-- Email Verification Success Message -->
-      <Transition
-        name="fade-slide"
-        mode="out-in"
-      >
+      <FadeSlideTransition>
         <div v-if="showEmailVerification" key="verification" class="text-center py-8">
           <div class="mb-6">
             <UIcon
@@ -168,24 +165,8 @@ const handleSubmit = async () => {
             </div>
           </div>
         </div>
-      </Transition>
+      </FadeSlideTransition>
     </div>
   </div>
 </template>
 
-<style scoped>
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.3s ease;
-}
-
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-</style>

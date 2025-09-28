@@ -6,10 +6,3 @@ export interface FetchError extends Error {
     error?: string
   }
 }
-
-export interface ZodError extends Error {
-  name: 'ZodError'
-  errors: Array<{
-    message?: string
-  }>
-}

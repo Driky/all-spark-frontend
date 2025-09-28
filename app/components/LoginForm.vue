@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { z } from "zod";
 
-const props = defineProps({
+defineProps({
   loading: {
     type: Boolean,
     default: false

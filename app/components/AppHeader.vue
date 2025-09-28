@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-const { loggedIn, user, clear } = useUserSession();
+const { loggedIn, user } = useUserSession();
 
 const navigateToProfile = () => {
   navigateTo('/protected');
@@ -20,8 +20,7 @@ const dropdownItems: DropdownMenuItem[][] = [
       label: 'Sign out',
       icon: 'i-heroicons-arrow-right-on-rectangle',
       onSelect: () => {
-        clear();
-        navigateTo('/login');
+        navigateTo('/logout');
       }
     }
   ]

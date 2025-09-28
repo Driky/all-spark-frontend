@@ -72,7 +72,39 @@ yarn preview
 bun run preview
 ```
 
-## Type Checking
+## Linting & Type Checking
+
+Run ESLint:
+
+```bash
+# npm
+npm run lint
+
+# pnpm
+pnpm lint
+
+# yarn
+yarn lint
+
+# bun
+bun run lint
+```
+
+Auto-fix ESLint issues:
+
+```bash
+# npm
+npm run lint:fix
+
+# pnpm
+pnpm lint:fix
+
+# yarn
+yarn lint:fix
+
+# bun
+bun run lint:fix
+```
 
 Run TypeScript type checking:
 

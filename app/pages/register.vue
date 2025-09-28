@@ -4,26 +4,31 @@ import type { RegisterFormInput } from '#shared/schemas/auth'
 const { register } = useAuth()
 const loading = ref(false)
 const error = ref<string | null>(null)
+const fieldErrors = ref<Record<string, string>>({})
 const showEmailVerification = ref(false)
 const registeredEmail = ref<string>('')
 
 const handleRegister = async (form: RegisterFormInput) => {
   loading.value = true
   error.value = null
+  fieldErrors.value = {}
 
-  try {
-    const response = await register(form)
+  const result = await register(form)
 
+  if (result.success) {
     // Show email verification message
-    if (response.success) {
-      registeredEmail.value = response.email
-      showEmailVerification.value = true
+    registeredEmail.value = result.data.email
+    showEmailVerification.value = true
+  } else {
+    // Handle validation and API errors
+    fieldErrors.value = result.errors
+    // Show general error if it exists
+    if (result.errors.general) {
+      error.value = result.errors.general
     }
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Registration failed'
-  } finally {
-    loading.value = false
   }
+
+  loading.value = false
 }
 </script>
 
@@ -37,10 +42,10 @@ const handleRegister = async (form: RegisterFormInput) => {
       :title="error"
     />
     <RegisterForm
-      @register="handleRegister"
       :loading="loading"
       :show-email-verification="showEmailVerification"
       :registered-email="registeredEmail"
+      @register="handleRegister"
     />
   </div>
 </template>

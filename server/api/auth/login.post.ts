@@ -1,5 +1,6 @@
 import { loginRequestSchema, loginResponseSchema } from '#shared/schemas/auth'
-import type { FetchError, ZodError } from '~~/server/utils/types'
+import { z } from 'zod'
+import type { FetchError } from '~~/server/utils/types'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -41,11 +42,10 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   } catch (error) {
     // Handle Zod validation errors
-    if (error instanceof Error && error.name === 'ZodError') {
-      const zodError = error as ZodError
+    if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        statusMessage: zodError.errors[0]?.message || 'Invalid request'
+        statusMessage: error.issues[0]?.message || 'Invalid request'
       })
     }
     // Re-throw other errors

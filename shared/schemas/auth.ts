@@ -21,6 +21,7 @@ export const errorResponseSchema = z.object({
 }))
 
 // Password validation regex
+// eslint-disable-next-line no-useless-escape
 const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/
 
 // Request body schemas

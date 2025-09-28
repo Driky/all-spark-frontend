@@ -1,5 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import checker from 'vite-plugin-checker';
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -18,6 +19,9 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true
   },
+  eslint: {
+    checker: true // <---
+  },
   vite: {
     plugins:
       [
@@ -26,6 +30,7 @@ export default defineNuxtConfig({
           vueTsc: true,
         }),
         tailwindcss(),
+        tsconfigPaths()
       ],
   },
   modules: [
