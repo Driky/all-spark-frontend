@@ -94,11 +94,11 @@ export const useAuth = () => {
     }
 
     try {
-      const response = await $fetch('/api/auth/register', {
-        method: 'POST',
-        body: validation.data // Send only email and password
-      })
-      return response
+      return await $fetch('/api/auth/register', {
+              method: 'POST',
+              body: validation.data // Send only email and password
+            });
+
     } catch (error) {
       const fetchError = error as FetchError
       throw new Error(fetchError.data?.statusMessage || fetchError.message || 'Registration failed')
