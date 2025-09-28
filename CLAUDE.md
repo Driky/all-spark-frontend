@@ -19,15 +19,24 @@ pnpm preview
 pnpm generate
 ```
 
-### Linting
+### Linting & Type Checking
 ```bash
 # Run ESLint (configured via @nuxt/eslint module)
 pnpm nuxi lint
+
+# Run TypeScript type checking
+pnpx nuxi typecheck
 ```
 
 ## Architecture
 
 This is a Nuxt 4 application with the following structure:
+
+### Import Aliases
+- `~` or `~/` - Maps to the `app/` directory
+- `~~` or `~~/` - Maps to the project root directory
+- `#shared` - Maps to the `shared/` directory (auto-configured)
+- `#auth-utils` - For nuxt-auth-utils types and utilities
 
 ### Core Technologies
 - **Nuxt 4.1.1** - Full-stack Vue framework

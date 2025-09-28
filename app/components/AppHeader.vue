@@ -1,9 +1,31 @@
 <script setup lang="ts">
-const { loggedIn, user } = useUserSession();
+import type { DropdownMenuItem } from '@nuxt/ui'
+
+const { loggedIn, user, clear } = useUserSession();
 
 const navigateToProfile = () => {
   navigateTo('/protected');
 };
+
+const dropdownItems: DropdownMenuItem[][] = [
+  [
+    {
+      label: 'Profile',
+      icon: 'i-heroicons-user-circle',
+      onSelect: navigateToProfile
+    }
+  ],
+  [
+    {
+      label: 'Sign out',
+      icon: 'i-heroicons-arrow-right-on-rectangle',
+      onSelect: () => {
+        clear();
+        navigateTo('/login');
+      }
+    }
+  ]
+];
 </script>
 
 <template>
@@ -25,7 +47,7 @@ const navigateToProfile = () => {
             <UButton
               to="/login"
               variant="ghost"
-              color="gray"
+              color="neutral"
               size="md"
             >
               Sign In
@@ -35,36 +57,20 @@ const navigateToProfile = () => {
               color="primary"
               size="md"
             >
-              Get Started
+              Register
             </UButton>
           </template>
 
           <!-- When logged in -->
           <template v-else>
-            <UDropdown :items="[[
-              {
-                label: 'Profile',
-                icon: 'i-heroicons-user-circle',
-                click: navigateToProfile
-              }
-            ], [
-              {
-                label: 'Sign out',
-                icon: 'i-heroicons-arrow-right-on-rectangle',
-                click: () => {
-                  const { clear } = useUserSession();
-                  clear();
-                  navigateTo('/login');
-                }
-              }
-            ]]">
+            <UDropdownMenu :items="dropdownItems" :content="{ align: 'end' }">
               <UAvatar
-                :alt="user?.name || 'User'"
-                :text="user?.name?.charAt(0) || 'U'"
+                :alt="user?.email || 'User'"
+                :text="user?.email?.charAt(0)?.toUpperCase() || 'U'"
                 size="md"
                 class="cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
               />
-            </UDropdown>
+            </UDropdownMenu>
           </template>
         </nav>
       </div>

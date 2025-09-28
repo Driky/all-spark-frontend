@@ -72,4 +72,22 @@ yarn preview
 bun run preview
 ```
 
+## Type Checking
+
+Run TypeScript type checking:
+
+```bash
+# npm
+npx nuxi typecheck
+
+# pnpm
+pnpx nuxi typecheck
+
+# yarn
+yarn nuxi typecheck
+
+# bun
+bunx nuxi typecheck
+```
+
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

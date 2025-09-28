@@ -2,11 +2,18 @@
 import { ref } from "vue";
 import { z } from "zod";
 
+const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: false
+  }
+});
+
 const emit = defineEmits(["login"]);
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
-  password: z.string(),
+  password: z.string().min(1, "Password is required"),
 });
 
 const form = ref({
@@ -40,6 +47,7 @@ const handleSubmit = async () => {
               v-model="form.email"
               placeholder="johndoe@gmail.com"
               class="w-full"
+              :disabled="loading"
             />
           </UFormField>
 
@@ -49,11 +57,19 @@ const handleSubmit = async () => {
               type="password"
               placeholder="********"
               class="w-full"
+              :disabled="loading"
             />
           </UFormField>
 
           <div class="mt-6">
-            <UButton type="submit" color="primary" block class="w-full py-2">
+            <UButton
+              type="submit"
+              color="primary"
+              block
+              class="w-full py-2"
+              :loading="loading"
+              :disabled="loading"
+            >
               Sign In
             </UButton>
           </div>
