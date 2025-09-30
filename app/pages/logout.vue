@@ -88,18 +88,18 @@ definePageMeta({
             <UButton
               color="primary"
               block
-              @click="handleRetry"
               data-testid="retry-button"
+              @click="handleRetry"
             >
               Try Again
             </UButton>
 
             <UButton
-              color="gray"
+              color="neutral"
               variant="outline"
               block
-              @click="handleForceLogout"
               data-testid="force-logout-button"
+              @click="handleForceLogout"
             >
               Force Local Sign Out
             </UButton>

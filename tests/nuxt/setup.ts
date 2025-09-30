@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 // Create mock functions that can be reused
 const mockNavigateTo = vi.fn()

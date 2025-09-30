@@ -1,21 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { useH3TestUtils } from '~~/tests/unit/setup'
+import type { H3Error } from 'h3'
 
-// Create mock functions
-const mockGetQuery = vi.fn()
+const { getQuery, createError } = useH3TestUtils()
+
 const mockGetUserSession = vi.fn()
 const mockClearUserSession = vi.fn()
-const mockCreateError = vi.fn()
-const mockUseRuntimeConfig = vi.fn()
 const mockFetch = vi.fn()
+const mockUseRuntimeConfig = vi.fn()
 
 // Stub global functions that are used at module load time
-vi.stubGlobal('defineEventHandler', vi.fn((handler) => handler))
-vi.stubGlobal('getQuery', mockGetQuery)
-vi.stubGlobal('createError', mockCreateError)
 vi.stubGlobal('getUserSession', mockGetUserSession)
 vi.stubGlobal('clearUserSession', mockClearUserSession)
-vi.stubGlobal('useRuntimeConfig', mockUseRuntimeConfig)
 vi.stubGlobal('$fetch', mockFetch)
+vi.stubGlobal('useRuntimeConfig', mockUseRuntimeConfig)
 
 describe('Server logout handler', () => {
   beforeEach(() => {
@@ -37,7 +35,7 @@ describe('Server logout handler', () => {
     }
 
     // Setup mocks
-    mockGetQuery.mockReturnValue({}) // No force parameter
+    getQuery.mockReturnValue({}) // No force parameter
     mockGetUserSession.mockResolvedValue(mockSession)
     mockUseRuntimeConfig.mockReturnValue({
       public: {
@@ -65,7 +63,7 @@ describe('Server logout handler', () => {
     const mockEvent = { user: 'mock-event' }
 
     // Setup mocks for force logout
-    mockGetQuery.mockReturnValue({ force: 'true' })
+    getQuery.mockReturnValue({ force: 'true' })
     mockClearUserSession.mockResolvedValue(undefined)
 
     const { logoutHandler } = await import('~~/server/api/auth/logout.post')
@@ -82,9 +80,9 @@ describe('Server logout handler', () => {
     const mockEvent = { user: 'mock-event' }
 
     // Setup mocks
-    mockGetQuery.mockReturnValue({}) // No force parameter
+    getQuery.mockReturnValue({}) // No force parameter
     mockGetUserSession.mockResolvedValue(null)
-    mockCreateError.mockImplementation((error) => {
+    createError.mockImplementation((error: Partial<H3Error<unknown>>) => {
       throw new Error(error.statusMessage)
     })
 
@@ -103,9 +101,9 @@ describe('Server logout handler', () => {
     }
 
     // Setup mocks
-    mockGetQuery.mockReturnValue({}) // No force parameter
+    getQuery.mockReturnValue({}) // No force parameter
     mockGetUserSession.mockResolvedValue(mockSession)
-    mockCreateError.mockImplementation((error) => {
+    createError.mockImplementation((error: Partial<H3Error<unknown>>) => {
       throw new Error(error.statusMessage)
     })
 
@@ -126,7 +124,7 @@ describe('Server logout handler', () => {
     }
 
     // Setup mocks
-    mockGetQuery.mockReturnValue({}) // No force parameter
+    getQuery.mockReturnValue({}) // No force parameter
     mockGetUserSession.mockResolvedValue(mockSession)
     mockUseRuntimeConfig.mockReturnValue({
       public: {
@@ -137,7 +135,7 @@ describe('Server logout handler', () => {
       statusCode: 500,
       data: { message: 'Backend logout failed' }
     })
-    mockCreateError.mockImplementation((error) => {
+    createError.mockImplementation((error: Partial<H3Error<unknown>>) => {
       throw new Error(error.statusMessage)
     })
 

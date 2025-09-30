@@ -1,6 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
 import checker from 'vite-plugin-checker';
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -30,16 +29,15 @@ export default defineNuxtConfig({
           vueTsc: true,
         }),
         tailwindcss(),
-        tsconfigPaths()
       ],
   },
   modules: [
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/scripts',
-    '@nuxt/test-utils',
+    '@nuxt/test-utils/module',
     '@nuxt/ui',
-    '@nuxt/content',
+    // '@nuxt/content',
     'nuxt-auth-utils'
   ]
 })

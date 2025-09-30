@@ -184,6 +184,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       // Force logout should always succeed
+      console.error('Error during force logout:', error)
       return {
         success: true,
         data: undefined

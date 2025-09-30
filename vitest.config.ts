@@ -1,20 +1,49 @@
+import { defineVitestProject } from '@nuxt/test-utils/config'
 import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
+import ui from '@nuxt/ui/vite'
 import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    ui()
+  ],
   test: {
-    environment: 'happy-dom',
-    globals: true,
-    setupFiles: ['./tests/setup.ts'],
+    projects: [
+      {
+        resolve: {
+          alias: {
+            '~~': fileURLToPath(new URL('.', import.meta.url)),
+            '~': fileURLToPath(new URL('./app', import.meta.url)),
+            '@': fileURLToPath(new URL('./app', import.meta.url)),
+            '#shared': fileURLToPath(new URL('./shared', import.meta.url)),
+          }
+        },
+        test: {
+          name: 'unit',
+          include: ['tests/unit/**/*.test.ts'],
+          environment: 'node',
+          setupFiles: ['./tests/unit/setup.ts'],
+          server: {
+            deps: {
+              inline: ['@nuxt/ui']
+            }
+          }
+        },
+      },
+      await defineVitestProject({
+        test: {
+          name: 'nuxt',
+          include: ['tests/nuxt/*.{test,spec}.ts'],
+          environment: 'nuxt',
+          environmentOptions: {
+            nuxt: {
+              // You can specify a DOM environment for components testing if needed.
+              domEnvironment: 'happy-dom',
+            },
+          },
+          setupFiles: ['./tests/nuxt/setup.ts']
+        },
+      }),
+    ],
   },
-  resolve: {
-    alias: {
-      '~': fileURLToPath(new URL('./app', import.meta.url)),
-      '~~': fileURLToPath(new URL('.', import.meta.url)),
-      '#shared': fileURLToPath(new URL('./shared', import.meta.url)),
-      '#auth-utils': fileURLToPath(new URL('./node_modules/nuxt-auth-utils', import.meta.url))
-    }
-  }
 })

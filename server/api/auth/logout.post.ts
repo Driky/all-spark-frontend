@@ -5,7 +5,7 @@ import type { H3Event } from 'h3';
 export const logoutHandler = async (event: H3Event<Request>) => {
   try {
     // Check for force parameter (skip backend call)
-    const query = getQuery(event)
+    const query = getQuery(event) as Record<string, string | string[]>
     const force = query.force === 'true'
 
     if (force) {
