@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { flushPromises } from '@vue/test-utils'
 import LogoutPage from '~/pages/logout.vue'
 
 // Use vi.hoisted to ensure mocks are initialized before imports
@@ -64,8 +65,7 @@ describe('LogoutPage', () => {
     const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for async operations to complete
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     // Should show error state
     expect(wrapper.find('[data-testid="logout-error"]').exists()).toBe(true)
@@ -82,8 +82,7 @@ describe('LogoutPage', () => {
     const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for async operations to complete
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     const retryButton = wrapper.find('[data-testid="retry-button"]')
     expect(retryButton.exists()).toBe(true)
@@ -99,8 +98,7 @@ describe('LogoutPage', () => {
     const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for first logout attempt
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     // Clear mock call history
     mockLogout.mockClear()
@@ -121,8 +119,7 @@ describe('LogoutPage', () => {
     const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for async operations to complete
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     const forceButton = wrapper.find('[data-testid="force-logout-button"]')
     expect(forceButton.exists()).toBe(true)
@@ -139,8 +136,7 @@ describe('LogoutPage', () => {
     const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for first logout attempt
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     // Click force logout button
     await wrapper.find('[data-testid="force-logout-button"]').trigger('click')
@@ -148,7 +144,7 @@ describe('LogoutPage', () => {
     expect(mockForceLocalLogout).toHaveBeenCalledTimes(1)
 
     // Should redirect after force logout
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flushPromises()
     expect(mockNavigateTo).toHaveBeenCalledWith('/login')
   })
 
@@ -161,19 +157,23 @@ describe('LogoutPage', () => {
     const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for first logout attempt
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     // Mock a delayed response for retry
-    mockLogout.mockImplementation(() => new Promise(resolve =>
-      setTimeout(() => resolve({ success: true, data: undefined }), 100)
-    ))
+    let resolveLogout: (value: any) => void
+    mockLogout.mockImplementation(() => new Promise(resolve => {
+      resolveLogout = resolve
+    }))
 
     // Click retry button
     await wrapper.find('[data-testid="retry-button"]').trigger('click')
+    await flushPromises()
 
-    // Should show loading state during retry
+    // Should show loading state during retry (before promise resolves)
     expect(wrapper.find('[data-testid="logout-spinner"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="logout-error"]').exists()).toBe(false)
+
+    // Clean up by resolving the promise
+    resolveLogout!({ success: true, data: undefined })
   })
 })
