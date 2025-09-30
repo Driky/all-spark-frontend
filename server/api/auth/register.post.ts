@@ -1,6 +1,7 @@
 import { registerRequestSchema, registerResponseSchema } from '#shared/schemas/auth'
 import { z } from 'zod'
 import type { FetchError } from '~~/server/utils/types'
+import { handleServerFetchError } from '~~/server/utils/fetchHandler'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -19,7 +20,7 @@ export default defineEventHandler(async (event) => {
       const fetchError = error as FetchError
       throw createError({
         statusCode: fetchError.statusCode || 500,
-        statusMessage: fetchError.data?.message || fetchError.data?.error || 'Registration failed'
+        statusMessage: handleServerFetchError(fetchError, 'Registration failed')
       })
     })
 

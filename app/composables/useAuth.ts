@@ -7,6 +7,7 @@ import {
   type RegisterRequest,
   type RegisterFormInput
 } from '#shared/schemas/auth'
+import { handleFetchError } from '#shared/utils/fetchHandler'
 
 export interface RegisterResponse {
   success: boolean
@@ -108,11 +109,10 @@ export const useAuth = () => {
         data: response
       }
     } catch (error) {
-      const fetchError = error as FetchError
       return {
         success: false,
         errors: {
-          general: fetchError.data?.statusMessage || fetchError.message || 'Registration failed'
+          general: handleFetchError(error as FetchError, 'Registration failed')
         }
       }
     }
@@ -139,11 +139,10 @@ export const useAuth = () => {
         data: undefined
       }
     } catch (error) {
-      const fetchError = error as FetchError
       return {
         success: false,
         errors: {
-          general: fetchError.data?.statusMessage || fetchError.message || 'Login failed'
+          general: handleFetchError(error as FetchError, 'Login failed')
         }
       }
     }
@@ -163,11 +162,10 @@ export const useAuth = () => {
         data: undefined
       }
     } catch (error) {
-      const fetchError = error as FetchError
       return {
         success: false,
         errors: {
-          general: fetchError.data?.statusMessage || fetchError.message || 'Logout failed'
+          general: handleFetchError(error as FetchError, 'Logout failed')
         }
       }
     }
