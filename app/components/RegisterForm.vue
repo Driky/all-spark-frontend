@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onUnmounted, watch } from "vue";
 import { registerFormSchema } from '#shared/schemas/auth';
 
-defineProps<{
+const props = defineProps<{
   loading?: boolean;
   showEmailVerification?: boolean;
   registeredEmail?: string;
@@ -24,6 +24,60 @@ const emit = defineEmits<{
 const handleSubmit = async () => {
   emit("register", form.value);
 };
+
+// Resend verification email logic
+const { resendVerificationEmail } = useAuth();
+const countdown = ref(60);
+const canResend = ref(false);
+const isResending = ref(false);
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+const startCountdown = () => {
+  countdown.value = 60;
+  canResend.value = false;
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  countdownInterval = setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      canResend.value = true;
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+    }
+  }, 1000);
+};
+
+const handleResendVerification = async () => {
+  if (!canResend.value || !props.registeredEmail || isResending.value) {
+    return;
+  }
+
+  isResending.value = true;
+  const result = await resendVerificationEmail(props.registeredEmail);
+  isResending.value = false;
+
+  if (result.success) {
+    startCountdown();
+  }
+};
+
+// Start countdown when email verification is shown
+watch(() => props.showEmailVerification, (newValue) => {
+  if (newValue) {
+    startCountdown();
+  }
+});
+
+// Cleanup interval on component unmount
+onUnmounted(() => {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+});
 </script>
 
 <template>
@@ -52,11 +106,18 @@ const handleSubmit = async () => {
               Please click the link in the email to verify your account.
             </p>
           </div>
-          <UDivider class="my-6" />
+          <!-- <UDivider class="my-6" /> -->
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Didn't receive an email? Check your spam folder or
-            <UButton variant="link" size="sm" class="ml-1">
-              resend verification email
+            <UButton
+              variant="link"
+              size="sm"
+              class="ml-1"
+              :disabled="!canResend || isResending"
+              :loading="isResending"
+              @click="handleResendVerification"
+            >
+              {{ canResend ? 'resend verification email' : `resend in ${countdown}s` }}
             </UButton>
           </p>
         </div>

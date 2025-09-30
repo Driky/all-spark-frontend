@@ -190,11 +190,33 @@ export const useAuth = () => {
     }
   }
 
+  const resendVerificationEmail = async (email: string): Promise<ValidationResult<void>> => {
+    try {
+      await $fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        body: { email }
+      })
+
+      return {
+        success: true,
+        data: undefined
+      }
+    } catch (error) {
+      return {
+        success: false,
+        errors: {
+          general: handleFetchError(error as FetchError, 'Failed to resend verification email')
+        }
+      }
+    }
+  }
+
   return {
     register,
     login,
     logout,
     forceLocalLogout,
+    resendVerificationEmail,
     validateRegisterForm,
     validateLoginForm
   }

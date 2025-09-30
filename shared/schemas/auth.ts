@@ -37,6 +37,10 @@ export const registerRequestSchema = z.object({
     .regex(passwordRegex, 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one symbol')
 })
 
+export const resendVerificationRequestSchema = z.object({
+  email: z.string().email('Invalid email address')
+})
+
 // Frontend form schema with confirmPassword field
 export const registerFormSchema = registerRequestSchema
   .extend({
@@ -54,3 +58,4 @@ export type ErrorResponse = z.infer<typeof errorResponseSchema>
 export type LoginRequest = z.infer<typeof loginRequestSchema>
 export type RegisterRequest = z.infer<typeof registerRequestSchema>
 export type RegisterFormInput = z.infer<typeof registerFormSchema>
+export type ResendVerificationRequest = z.infer<typeof resendVerificationRequestSchema>
