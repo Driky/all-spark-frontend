@@ -33,11 +33,10 @@ export default defineConfig({
       await defineVitestProject({
         test: {
           name: 'nuxt',
-          include: ['tests/nuxt/*.{test,spec}.ts'],
+          include: ['tests/nuxt/**/*.{test,spec}.ts'],
           environment: 'nuxt',
           environmentOptions: {
             nuxt: {
-              // You can specify a DOM environment for components testing if needed.
               domEnvironment: 'happy-dom',
             },
           },

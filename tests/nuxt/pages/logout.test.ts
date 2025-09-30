@@ -1,36 +1,35 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import LogoutPage from '~/pages/logout.vue'
 
-// Mock composables
-const mockLogout = vi.fn()
-const mockForceLocalLogout = vi.fn()
-const mockNavigateTo = vi.fn()
-
-// Mock the useAuth composable for this test
-vi.mock('~/composables/useAuth', () => ({
-  useAuth: () => ({
-    logout: mockLogout,
-    forceLocalLogout: mockForceLocalLogout
-  })
+// Use vi.hoisted to ensure mocks are initialized before imports
+const { mockNavigateTo, mockLogout, mockForceLocalLogout } = vi.hoisted(() => ({
+  mockNavigateTo: vi.fn(),
+  mockLogout: vi.fn().mockResolvedValue({ success: true, data: undefined }),
+  mockForceLocalLogout: vi.fn().mockResolvedValue({ success: true, data: undefined })
 }))
 
-// Mock Nuxt functions globally for this test
-globalThis.useAuth = () => ({
+// Mock Nuxt auto-imports
+mockNuxtImport('navigateTo', () => mockNavigateTo)
+mockNuxtImport('useAuth', () => () => ({
   logout: mockLogout,
   forceLocalLogout: mockForceLocalLogout
-})
-globalThis.navigateTo = mockNavigateTo
-globalThis.definePageMeta = vi.fn()
-globalThis.onMounted = vi.fn((fn) => fn())
+}))
 
 describe('LogoutPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('should show spinner on mount', () => {
-    const wrapper = mount(LogoutPage)
+  afterEach(() => {
+    // Reset mocks to prevent test pollution (best practice)
+    mockNavigateTo.mockReset()
+    mockLogout.mockReset()
+    mockForceLocalLogout.mockReset()
+  })
+
+  it('should show spinner on mount', async () => {
+    const wrapper = await mountSuspended(LogoutPage)
 
     // Should show loading state
     expect(wrapper.find('[data-testid="logout-spinner"]').exists()).toBe(true)
@@ -40,23 +39,18 @@ describe('LogoutPage', () => {
   it('should call logout on mount', async () => {
     mockLogout.mockResolvedValue({ success: true, data: undefined })
 
-    mount(LogoutPage)
+    await mountSuspended(LogoutPage)
 
-    // Wait for next tick to ensure mounted hook runs
-    await new Promise(resolve => setTimeout(resolve, 0))
-
+    // mountSuspended waits for async operations
     expect(mockLogout).toHaveBeenCalledTimes(1)
   })
 
   it('should redirect to /login on successful logout', async () => {
     mockLogout.mockResolvedValue({ success: true, data: undefined })
 
-    const wrapper = mount(LogoutPage)
+    await mountSuspended(LogoutPage)
 
-    // Wait for async operations
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 0))
-
+    // navigateTo should be called with '/login'
     expect(mockNavigateTo).toHaveBeenCalledWith('/login')
   })
 
@@ -67,9 +61,9 @@ describe('LogoutPage', () => {
       errors: { general: errorMessage }
     })
 
-    const wrapper = mount(LogoutPage)
+    const wrapper = await mountSuspended(LogoutPage)
 
-    // Wait for async operations
+    // Wait for async operations to complete
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 100))
 
@@ -85,9 +79,9 @@ describe('LogoutPage', () => {
       errors: { general: 'Connection error' }
     })
 
-    const wrapper = mount(LogoutPage)
+    const wrapper = await mountSuspended(LogoutPage)
 
-    // Wait for async operations
+    // Wait for async operations to complete
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 100))
 
@@ -102,7 +96,7 @@ describe('LogoutPage', () => {
       errors: { general: 'Connection error' }
     })
 
-    const wrapper = mount(LogoutPage)
+    const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for first logout attempt
     await wrapper.vm.$nextTick()
@@ -124,9 +118,9 @@ describe('LogoutPage', () => {
       errors: { general: 'Connection error' }
     })
 
-    const wrapper = mount(LogoutPage)
+    const wrapper = await mountSuspended(LogoutPage)
 
-    // Wait for async operations
+    // Wait for async operations to complete
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 100))
 
@@ -142,7 +136,7 @@ describe('LogoutPage', () => {
     })
     mockForceLocalLogout.mockResolvedValueOnce({ success: true, data: undefined })
 
-    const wrapper = mount(LogoutPage)
+    const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for first logout attempt
     await wrapper.vm.$nextTick()
@@ -164,7 +158,7 @@ describe('LogoutPage', () => {
       errors: { general: 'Connection error' }
     })
 
-    const wrapper = mount(LogoutPage)
+    const wrapper = await mountSuspended(LogoutPage)
 
     // Wait for first logout attempt
     await wrapper.vm.$nextTick()
