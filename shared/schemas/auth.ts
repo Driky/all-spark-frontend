@@ -22,7 +22,7 @@ export const errorResponseSchema = z.object({
 
 // Password validation regex
 // eslint-disable-next-line no-useless-escape
-const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/
+const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/
 
 // Request body schemas
 export const loginRequestSchema = z.object({
@@ -34,7 +34,7 @@ export const registerRequestSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string()
     .min(12, 'Password must be at least 12 characters')
-    .regex(passwordRegex, 'Password must contain at least one uppercase letter, one digit, and one symbol')
+    .regex(passwordRegex, 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one symbol')
 })
 
 // Frontend form schema with confirmPassword field
