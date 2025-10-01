@@ -8,6 +8,7 @@ function logout() {
   clear();
   navigateTo("/login");
 }
+const date = useState('date', () => new Date().toISOString());
 </script>
 
 <template>
@@ -42,9 +43,7 @@ function logout() {
       <div class="space-y-2">
         <div class="flex justify-between">
           <span class="text-gray-500 dark:text-gray-400">Member since</span>
-          <span class="dark:text-gray-200">{{
-            new Date().toLocaleDateString()
-          }}</span>
+          <span class="dark:text-gray-200">{{date}}</span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500 dark:text-gray-400">Account type</span>
