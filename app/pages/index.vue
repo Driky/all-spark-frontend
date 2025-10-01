@@ -28,7 +28,7 @@ const features = [
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <AppHeader />
-    
+
     <!-- Hero Section -->
     <section class="relative overflow-hidden">
       <div class="container mx-auto px-4 py-24">
@@ -39,7 +39,7 @@ const features = [
           <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
             A modern authentication-enabled application built with Nuxt 4
           </p>
-          
+
           <div class="flex gap-4 justify-center">
             <template v-if="!loggedIn">
               <UButton
@@ -75,11 +75,11 @@ const features = [
           </div>
         </div>
       </div>
-      
+
       <!-- Background decoration -->
       <div class="absolute inset-0 -z-10 overflow-hidden">
-        <div class="absolute -top-1/2 -right-1/2 w-96 h-96 bg-primary-200 dark:bg-primary-900 rounded-full blur-3xl opacity-20"></div>
-        <div class="absolute -bottom-1/2 -left-1/2 w-96 h-96 bg-primary-300 dark:bg-primary-800 rounded-full blur-3xl opacity-20"></div>
+        <div class="absolute -top-1/2 -right-1/2 w-96 h-96 bg-primary-200 dark:bg-primary-900 rounded-full blur-3xl opacity-20"/>
+        <div class="absolute -bottom-1/2 -left-1/2 w-96 h-96 bg-primary-300 dark:bg-primary-800 rounded-full blur-3xl opacity-20"/>
       </div>
     </section>
 
@@ -89,7 +89,7 @@ const features = [
         <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
           Built with Modern Technologies
         </h2>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <UCard
             v-for="feature in features"

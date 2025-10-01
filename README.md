@@ -72,4 +72,54 @@ yarn preview
 bun run preview
 ```
 
+## Linting & Type Checking
+
+Run ESLint:
+
+```bash
+# npm
+npm run lint
+
+# pnpm
+pnpm lint
+
+# yarn
+yarn lint
+
+# bun
+bun run lint
+```
+
+Auto-fix ESLint issues:
+
+```bash
+# npm
+npm run lint:fix
+
+# pnpm
+pnpm lint:fix
+
+# yarn
+yarn lint:fix
+
+# bun
+bun run lint:fix
+```
+
+Run TypeScript type checking:
+
+```bash
+# npm
+npx nuxi typecheck
+
+# pnpm
+pnpx nuxi typecheck
+
+# yarn
+yarn nuxi typecheck
+
+# bun
+bunx nuxi typecheck
+```
+
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
