@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted, watch } from "vue";
+import { ref, onUnmounted, watch, onMounted } from "vue";
 import { registerFormSchema } from '#shared/schemas/auth';
 
 const props = defineProps<{
@@ -30,6 +30,7 @@ const { resendVerificationEmail } = useAuth();
 const countdown = ref(60);
 const canResend = ref(false);
 const isResending = ref(false);
+const isMounted = ref(false);
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
 const startCountdown = () => {
@@ -65,9 +66,18 @@ const handleResendVerification = async () => {
   }
 };
 
-// Start countdown when email verification is shown
+// Set mounted state
+onMounted(() => {
+  isMounted.value = true;
+  // Start countdown if verification is already showing
+  if (props.showEmailVerification) {
+    startCountdown();
+  }
+});
+
+// Start countdown when email verification is shown (after mount)
 watch(() => props.showEmailVerification, (newValue) => {
-  if (newValue) {
+  if (newValue && isMounted.value) {
     startCountdown();
   }
 });
@@ -86,44 +96,44 @@ onUnmounted(() => {
       class="max-w-md w-full mx-auto p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/30"
     >
       <!-- Email Verification Success Message -->
-      <FadeSlideTransition>
-        <div v-if="showEmailVerification" key="verification" class="text-center py-8">
-          <div class="mb-6">
-            <UIcon
-              name="i-heroicons-envelope"
-              class="w-16 h-16 text-primary-500 mx-auto mb-4"
-            />
-            <h2 class="text-2xl font-bold mb-2 dark:text-white">
-              Check Your Email
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">
-              We've sent a verification email to:
-            </p>
-            <p class="font-medium text-gray-900 dark:text-white mb-6">
-              {{ registeredEmail }}
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Please click the link in the email to verify your account.
+      <ClientOnly>
+        <FadeSlideTransition>
+          <div v-if="showEmailVerification" key="verification" class="text-center py-8">
+            <div class="mb-6">
+              <UIcon
+                name="i-heroicons-envelope"
+                class="w-16 h-16 text-primary-500 mx-auto mb-4"
+              />
+              <h2 class="text-2xl font-bold mb-2 dark:text-white">
+                Check Your Email
+              </h2>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                We've sent a verification email to:
+              </p>
+              <p class="font-medium text-gray-900 dark:text-white mb-6">
+                {{ registeredEmail }}
+              </p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Please click the link in the email to verify your account.
+              </p>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Didn't receive an email? Check your spam folder or
+              <UButton
+                variant="link"
+                size="sm"
+                class="ml-1"
+                :disabled="!canResend || isResending"
+                :loading="isResending"
+                @click="handleResendVerification"
+              >
+                {{ canResend ? 'resend verification email' : `resend in ${countdown}s` }}
+              </UButton>
             </p>
           </div>
-          <!-- <UDivider class="my-6" /> -->
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            Didn't receive an email? Check your spam folder or
-            <UButton
-              variant="link"
-              size="sm"
-              class="ml-1"
-              :disabled="!canResend || isResending"
-              :loading="isResending"
-              @click="handleResendVerification"
-            >
-              {{ canResend ? 'resend verification email' : `resend in ${countdown}s` }}
-            </UButton>
-          </p>
-        </div>
 
-        <!-- Registration Form -->
-        <div v-else key="form">
+          <!-- Registration Form -->
+          <div v-else key="form">
           <h2 class="text-2xl font-bold text-center mb-6 dark:text-white">
             Create Account
           </h2>
@@ -226,7 +236,8 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-      </FadeSlideTransition>
+        </FadeSlideTransition>
+      </ClientOnly>
     </div>
   </div>
 </template>
