@@ -160,7 +160,7 @@ describe('LogoutPage', () => {
     await flushPromises()
 
     // Mock a delayed response for retry
-    let resolveLogout: (value: any) => void
+    let resolveLogout: (value: unknown) => void
     mockLogout.mockImplementation(() => new Promise(resolve => {
       resolveLogout = resolve
     }))
